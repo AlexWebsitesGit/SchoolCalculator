@@ -1,0 +1,1227 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #f1f1f1;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* CALCULATOR */
+
+.calculator {
+    width: min(360px, 94vw);
+    background: #181818;
+    padding: 18px;
+    border-radius: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.25);
+}
+
+.display {
+    height: 90px;
+    background: #090909;
+    border-radius: 16px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 15px;
+    font-size: 36px;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+    transition: transform .12s, filter .12s;
+}
+
+button:active {
+    transform: scale(.94);
+}
+
+.calc-btn {
+    height: 62px;
+    border-radius: 15px;
+    font-size: 21px;
+}
+
+.number {
+    background: #303030;
+    color: white;
+}
+
+.operator {
+    background: #ff9f0a;
+    color: white;
+}
+
+.clear {
+    background: #a5a5a5;
+    color: #111;
+}
+
+.equals {
+    background: #ff9f0a;
+    color: white;
+}
+
+.zero {
+    grid-column: span 2;
+}
+
+/* GAME CENTER */
+
+#gameCenter {
+    display: none;
+    position: fixed;
+    inset: 0;
+    overflow-y: auto;
+    background: #0e0e0e;
+    color: white;
+    padding: 25px;
+    z-index: 10;
+}
+
+.game-header {
+    max-width: 1150px;
+    margin: 0 auto 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.game-header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.close {
+    background: #292929;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+/* SEARCH */
+
+.controls {
+    max-width: 1150px;
+    margin: auto auto 25px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#search {
+    flex: 1;
+    min-width: 220px;
+    height: 46px;
+    border: 1px solid #333;
+    border-radius: 12px;
+    background: #191919;
+    color: white;
+    padding: 0 15px;
+    font-size: 16px;
+    outline: none;
+}
+
+.category {
+    height: 46px;
+    background: #191919;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 0 14px;
+}
+
+/* GAME CARDS */
+
+.games {
+    max-width: 1150px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.game-card {
+    background: #181818;
+    border: 1px solid #292929;
+    border-radius: 18px;
+    padding: 20px;
+    transition: .2s;
+}
+
+.game-card:hover {
+    transform: translateY(-4px);
+    border-color: #555;
+}
+
+.game-icon {
+    font-size: 45px;
+}
+
+.game-card h2 {
+    margin: 10px 0 5px;
+}
+
+.game-card p {
+    color: #999;
+    min-height: 42px;
+    line-height: 1.4;
+}
+
+.card-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.play {
+    flex: 1;
+    height: 43px;
+    background: white;
+    color: black;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.favorite {
+    width: 45px;
+    height: 43px;
+    border-radius: 10px;
+    background: #292929;
+    color: white;
+    font-size: 20px;
+}
+
+/* GAME SCREEN */
+
+.game-screen {
+    display: none;
+    max-width: 600px;
+    margin: auto;
+}
+
+.game-screen.active {
+    display: block;
+}
+
+.back-button {
+    background: #292929;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* 2048 */
+
+.board {
+    width: min(430px, 94vw);
+    aspect-ratio: 1;
+    background: #777;
+    border-radius: 14px;
+    padding: 10px;
+    margin: 20px auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    touch-action: none;
+}
+
+.tile {
+    background: #aaa;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: clamp(22px, 7vw, 38px);
+}
+
+.tile-2 { background: #eee; color: #222; }
+.tile-4 { background: #ddd; color: #222; }
+.tile-8 { background: #f3a35c; color: white; }
+.tile-16 { background: #e98745; color: white; }
+.tile-32 { background: #e66b45; color: white; }
+.tile-64 { background: #d84b35; color: white; }
+.tile-128 { background: #e0c05a; color: white; }
+.tile-256 { background: #d5ad38; color: white; }
+.tile-512 { background: #c99a25; color: white; }
+.tile-1024 { background: #b98a20; color: white; }
+.tile-2048 { background: #a87815; color: white; }
+
+.score-box {
+    text-align: center;
+    font-size: 20px;
+}
+
+.restart {
+    display: block;
+    margin: 15px auto;
+    background: white;
+    color: black;
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.touch-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 55px);
+    gap: 7px;
+    justify-content: center;
+}
+
+.touch-controls button {
+    height: 50px;
+    border-radius: 10px;
+    background: #292929;
+    color: white;
+    font-size: 20px;
+}
+
+.up {
+    grid-column: 2;
+}
+
+.left {
+    grid-column: 1;
+}
+
+.down {
+    grid-column: 2;
+}
+
+.right {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+/* REACTION TEST */
+
+.reaction-box {
+    width: min(600px, 94vw);
+    height: 380px;
+    background: #252525;
+    border-radius: 20px;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 25px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.reaction-box.waiting {
+    background: #b52b2b;
+}
+
+.reaction-box.ready {
+    background: #28a745;
+}
+
+.reaction-text {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.reaction-result {
+    text-align: center;
+    font-size: 20px;
+}
+
+/* MOBILE */
+
+@media(max-width:600px) {
+
+    #gameCenter {
+        padding: 18px;
+    }
+
+    .game-header h1 {
+        font-size: 25px;
+    }
+
+    .game-card {
+        padding: 17px;
+    }
+
+    .reaction-box {
+        height: 330px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- CALCULATOR -->
+
+<div class="calculator">
+
+    <div class="display" id="display">0</div>
+
+    <div class="buttons">
+
+        <button class="calc-btn clear" onclick="clearDisplay()">AC</button>
+        <button class="calc-btn clear" onclick="deleteLast()">⌫</button>
+        <button class="calc-btn operator" onclick="addOperator('%')">%</button>
+        <button class="calc-btn operator" onclick="addOperator('/')">÷</button>
+
+        <button class="calc-btn number" onclick="addNumber('7')">7</button>
+        <button class="calc-btn number" onclick="addNumber('8')">8</button>
+        <button class="calc-btn number" onclick="addNumber('9')">9</button>
+        <button class="calc-btn operator" onclick="addOperator('*')">×</button>
+
+        <button class="calc-btn number" onclick="addNumber('4')">4</button>
+        <button class="calc-btn number" onclick="addNumber('5')">5</button>
+        <button class="calc-btn number" onclick="addNumber('6')">6</button>
+        <button class="calc-btn operator" onclick="addOperator('-')">−</button>
+
+        <button class="calc-btn number" onclick="addNumber('1')">1</button>
+        <button class="calc-btn number" onclick="addNumber('2')">2</button>
+        <button class="calc-btn number" onclick="addNumber('3')">3</button>
+        <button class="calc-btn operator" onclick="addOperator('+')">+</button>
+
+        <button class="calc-btn number zero" onclick="addNumber('0')">0</button>
+        <button class="calc-btn number" onclick="addNumber('.')">.</button>
+        <button class="calc-btn equals" onclick="calculate()">=</button>
+
+    </div>
+</div>
+
+
+<!-- GAME CENTER -->
+
+<div id="gameCenter">
+
+    <div class="game-header">
+        <h1>🎮 Game Center</h1>
+        <button class="close" onclick="closeGameCenter()">Calculator</button>
+    </div>
+
+    <div class="controls">
+
+        <input
+            id="search"
+            type="text"
+            placeholder="Search games..."
+            oninput="filterGames()"
+        >
+
+        <select class="category" id="category" onchange="filterGames()">
+            <option value="all">All games</option>
+            <option value="puzzle">Puzzle</option>
+            <option value="arcade">Arcade</option>
+            <option value="reaction">Reaction</option>
+        </select>
+
+    </div>
+
+
+    <!-- GAME CARDS -->
+
+    <div class="games" id="gamesList">
+
+        <div class="game-card" data-name="2048 puzzle" data-category="puzzle">
+
+            <div class="game-icon">🧩</div>
+
+            <h2>2048</h2>
+
+            <p>Merge numbers and reach 2048.</p>
+
+            <div class="card-buttons">
+
+                <button class="play" onclick="startGame('2048')">
+                    PLAY
+                </button>
+
+                <button class="favorite" onclick="toggleFavorite(this, '2048')">
+                    ☆
+                </button>
+
+            </div>
+        </div>
+
+
+        <div class="game-card" data-name="reaction test reflex speed" data-category="reaction">
+
+            <div class="game-icon">⚡</div>
+
+            <h2>Reaction Test</h2>
+
+            <p>Test how quickly you can react.</p>
+
+            <div class="card-buttons">
+
+                <button class="play" onclick="startGame('reaction')">
+                    PLAY
+                </button>
+
+                <button class="favorite" onclick="toggleFavorite(this, 'reaction')">
+                    ☆
+                </button>
+
+            </div>
+        </div>
+
+
+        <div class="game-card" data-name="snake arcade" data-category="arcade">
+
+            <div class="game-icon">🐍</div>
+
+            <h2>Snake</h2>
+
+            <p>Classic arcade snake game.</p>
+
+            <div class="card-buttons">
+
+                <button class="play" onclick="alert('Snake is coming soon!')">
+                    SOON
+                </button>
+
+                <button class="favorite" onclick="toggleFavorite(this, 'snake')">
+                    ☆
+                </button>
+
+            </div>
+        </div>
+
+
+        <div class="game-card" data-name="flappy arcade" data-category="arcade">
+
+            <div class="game-icon">🐦</div>
+
+            <h2>Flappy</h2>
+
+            <p>Fly through the obstacles.</p>
+
+            <div class="card-buttons">
+
+                <button class="play" onclick="alert('Flappy is coming soon!')">
+                    SOON
+                </button>
+
+                <button class="favorite" onclick="toggleFavorite(this, 'flappy')">
+                    ☆
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- 2048 SCREEN -->
+
+    <div class="game-screen" id="game2048">
+
+        <button class="back-button" onclick="backToGames()">
+            ← Game Center
+        </button>
+
+        <h1>🧩 2048</h1>
+
+        <div class="score-box">
+            Score: <span id="score">0</span>
+        </div>
+
+        <div class="board" id="board"></div>
+
+        <div class="touch-controls">
+
+            <button class="up" onclick="move2048('up')">▲</button>
+            <button class="left" onclick="move2048('left')">◀</button>
+            <button class="down" onclick="move2048('down')">▼</button>
+            <button class="right" onclick="move2048('right')">▶</button>
+
+        </div>
+
+        <button class="restart" onclick="new2048Game()">
+            New Game
+        </button>
+
+    </div>
+
+
+    <!-- REACTION SCREEN -->
+
+    <div class="game-screen" id="reactionGame">
+
+        <button class="back-button" onclick="backToGames()">
+            ← Game Center
+        </button>
+
+        <h1>⚡ Reaction Test</h1>
+
+        <div
+            id="reactionBox"
+            class="reaction-box"
+            onclick="reactionClick()"
+        >
+
+            <div class="reaction-text" id="reactionText">
+                Press START to begin
+            </div>
+
+        </div>
+
+        <button class="restart" onclick="startReaction()">
+            START
+        </button>
+
+        <div class="reaction-result" id="reactionResult">
+            Best: —
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   CALCULATOR
+========================= */
+
+let current = "";
+const display = document.getElementById("display");
+
+function addNumber(number) {
+
+    current += number;
+    display.textContent = current;
+
+    checkSecret();
+}
+
+function addOperator(operator) {
+
+    current += operator;
+    display.textContent = current;
+
+    checkSecret();
+}
+
+function clearDisplay() {
+
+    current = "";
+    display.textContent = "0";
+}
+
+function deleteLast() {
+
+    current = current.slice(0, -1);
+
+    display.textContent = current || "0";
+}
+
+function calculate() {
+
+    try {
+
+        if (!current) return;
+
+        const result = Function(
+            '"use strict"; return (' + current + ')'
+        )();
+
+        display.textContent = result;
+        current = String(result);
+
+    } catch {
+
+        display.textContent = "Error";
+        current = "";
+
+    }
+
+    checkSecret();
+}
+
+
+/* =========================
+   SECRET CODE
+========================= */
+
+const secretParts = [735, 5608];
+const secretCode = secretParts.join("");
+
+function checkSecret() {
+
+    if (current === secretCode) {
+
+        document.getElementById("gameCenter").style.display = "block";
+
+        current = "";
+        display.textContent = "0";
+
+    }
+}
+
+
+/* =========================
+   GAME CENTER
+========================= */
+
+function closeGameCenter() {
+
+    document.getElementById("gameCenter").style.display = "none";
+
+    backToGames();
+}
+
+function startGame(game) {
+
+    document.getElementById("gamesList").style.display = "none";
+    document.querySelector(".controls").style.display = "none";
+
+    if (game === "2048") {
+
+        document.getElementById("game2048").classList.add("active");
+        new2048Game();
+
+    }
+
+    if (game === "reaction") {
+
+        document.getElementById("reactionGame").classList.add("active");
+
+        resetReaction();
+
+    }
+}
+
+function backToGames() {
+
+    document.querySelectorAll(".game-screen").forEach(screen => {
+        screen.classList.remove("active");
+    });
+
+    document.getElementById("gamesList").style.display = "grid";
+    document.querySelector(".controls").style.display = "flex";
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+function filterGames() {
+
+    const search =
+        document.getElementById("search").value.toLowerCase();
+
+    const category =
+        document.getElementById("category").value;
+
+    document.querySelectorAll(".game-card").forEach(card => {
+
+        const name = card.dataset.name;
+        const cardCategory = card.dataset.category;
+
+        const matchesSearch = name.includes(search);
+
+        const matchesCategory =
+            category === "all" ||
+            cardCategory === category;
+
+        card.style.display =
+            matchesSearch && matchesCategory
+            ? "block"
+            : "none";
+    });
+}
+
+
+/* =========================
+   FAVORITES
+========================= */
+
+let favorites =
+    JSON.parse(localStorage.getItem("gameFavorites") || "[]");
+
+function toggleFavorite(button, game) {
+
+    if (favorites.includes(game)) {
+
+        favorites =
+            favorites.filter(item => item !== game);
+
+        button.textContent = "☆";
+
+    } else {
+
+        favorites.push(game);
+        button.textContent = "★";
+
+    }
+
+    localStorage.setItem(
+        "gameFavorites",
+        JSON.stringify(favorites)
+    );
+}
+
+function loadFavorites() {
+
+    document.querySelectorAll(".favorite").forEach(button => {
+
+        const onclick = button.getAttribute("onclick");
+
+        favorites.forEach(game => {
+
+            if (onclick.includes("'" + game + "'")) {
+                button.textContent = "★";
+            }
+
+        });
+
+    });
+}
+
+loadFavorites();
+
+
+/* =========================
+   2048
+========================= */
+
+let grid = [];
+let score = 0;
+
+function new2048Game() {
+
+    grid = Array.from(
+        { length: 4 },
+        () => Array(4).fill(0)
+    );
+
+    score = 0;
+
+    addRandomTile();
+    addRandomTile();
+
+    render2048();
+}
+
+function addRandomTile() {
+
+    const empty = [];
+
+    for (let r = 0; r < 4; r++) {
+
+        for (let c = 0; c < 4; c++) {
+
+            if (grid[r][c] === 0) {
+                empty.push([r, c]);
+            }
+
+        }
+    }
+
+    if (!empty.length) return;
+
+    const [r, c] =
+        empty[Math.floor(Math.random() * empty.length)];
+
+    grid[r][c] =
+        Math.random() < .9 ? 2 : 4;
+}
+
+function render2048() {
+
+    const board =
+        document.getElementById("board");
+
+    board.innerHTML = "";
+
+    grid.forEach(row => {
+
+        row.forEach(value => {
+
+            const tile =
+                document.createElement("div");
+
+            tile.className = "tile";
+
+            if (value) {
+                tile.classList.add("tile-" + value);
+                tile.textContent = value;
+            }
+
+            board.appendChild(tile);
+
+        });
+
+    });
+
+    document.getElementById("score").textContent = score;
+}
+
+function compress(row) {
+
+    return row.filter(value => value !== 0);
+}
+
+function merge(row) {
+
+    for (let i = 0; i < row.length - 1; i++) {
+
+        if (row[i] === row[i + 1]) {
+
+            row[i] *= 2;
+            score += row[i];
+
+            row.splice(i + 1, 1);
+        }
+
+    }
+
+    return row;
+}
+
+function move2048(direction) {
+
+    let old =
+        JSON.stringify(grid);
+
+    if (direction === "left") {
+
+        for (let r = 0; r < 4; r++) {
+
+            let row = compress(grid[r]);
+            row = merge(row);
+
+            while (row.length < 4) row.push(0);
+
+            grid[r] = row;
+        }
+    }
+
+    if (direction === "right") {
+
+        for (let r = 0; r < 4; r++) {
+
+            let row =
+                compress(grid[r].slice().reverse());
+
+            row = merge(row);
+
+            while (row.length < 4) row.push(0);
+
+            grid[r] = row.reverse();
+        }
+    }
+
+    if (direction === "up") {
+
+        for (let c = 0; c < 4; c++) {
+
+            let column = [];
+
+            for (let r = 0; r < 4; r++) {
+                column.push(grid[r][c]);
+            }
+
+            column = compress(column);
+            column = merge(column);
+
+            while (column.length < 4) column.push(0);
+
+            for (let r = 0; r < 4; r++) {
+                grid[r][c] = column[r];
+            }
+        }
+    }
+
+    if (direction === "down") {
+
+        for (let c = 0; c < 4; c++) {
+
+            let column = [];
+
+            for (let r = 0; r < 4; r++) {
+                column.push(grid[r][c]);
+            }
+
+            column =
+                compress(column.reverse());
+
+            column = merge(column);
+
+            while (column.length < 4) column.push(0);
+
+            column.reverse();
+
+            for (let r = 0; r < 4; r++) {
+                grid[r][c] = column[r];
+            }
+        }
+    }
+
+    if (JSON.stringify(grid) !== old) {
+
+        addRandomTile();
+        render2048();
+
+        if (isGameOver()) {
+
+            setTimeout(() => {
+                alert("Game Over!");
+            }, 100);
+
+        }
+    }
+}
+
+function isGameOver() {
+
+    for (let r = 0; r < 4; r++) {
+
+        for (let c = 0; c < 4; c++) {
+
+            if (grid[r][c] === 0)
+                return false;
+
+            if (
+                c < 3 &&
+                grid[r][c] === grid[r][c + 1]
+            )
+                return false;
+
+            if (
+                r < 3 &&
+                grid[r][c] === grid[r + 1][c]
+            )
+                return false;
+        }
+    }
+
+    return true;
+}
+
+
+/* KEYBOARD */
+
+document.addEventListener("keydown", event => {
+
+    if (
+        document.getElementById("game2048")
+        .classList.contains("active")
+    ) {
+
+        if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            move2048("left");
+        }
+
+        if (event.key === "ArrowRight") {
+            event.preventDefault();
+            move2048("right");
+        }
+
+        if (event.key === "ArrowUp") {
+            event.preventDefault();
+            move2048("up");
+        }
+
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            move2048("down");
+        }
+    }
+
+});
+
+
+/* SWIPE */
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+const board = document.getElementById("board");
+
+board.addEventListener("touchstart", event => {
+
+    touchStartX = event.changedTouches[0].screenX;
+    touchStartY = event.changedTouches[0].screenY;
+
+}, { passive: true });
+
+board.addEventListener("touchend", event => {
+
+    const endX =
+        event.changedTouches[0].screenX;
+
+    const endY =
+        event.changedTouches[0].screenY;
+
+    const dx = endX - touchStartX;
+    const dy = endY - touchStartY;
+
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 30)
+        return;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+
+        move2048(dx > 0 ? "right" : "left");
+
+    } else {
+
+        move2048(dy > 0 ? "down" : "up");
+
+    }
+
+});
+
+
+/* =========================
+   REACTION TEST
+========================= */
+
+let reactionState = "idle";
+let reactionStart = 0;
+let reactionTimer = null;
+
+function resetReaction() {
+
+    reactionState = "idle";
+
+    const box =
+        document.getElementById("reactionBox");
+
+    box.className = "reaction-box";
+
+    document.getElementById("reactionText").textContent =
+        "Press START to begin";
+
+    const best =
+        localStorage.getItem("reactionBest");
+
+    document.getElementById("reactionResult").textContent =
+        best ? "Best: " + best + " ms" : "Best: —";
+}
+
+function startReaction() {
+
+    clearTimeout(reactionTimer);
+
+    const box =
+        document.getElementById("reactionBox");
+
+    const text =
+        document.getElementById("reactionText");
+
+    reactionState = "waiting";
+
+    box.className = "reaction-box waiting";
+
+    text.textContent =
+        "Wait for green...";
+
+    const delay =
+        1500 + Math.random() * 3500;
+
+    reactionTimer = setTimeout(() => {
+
+        reactionState = "ready";
+
+        reactionStart = performance.now();
+
+        box.className = "reaction-box ready";
+
+        text.textContent =
+            "CLICK NOW!";
+
+    }, delay);
+}
+
+function reactionClick() {
+
+    if (reactionState === "waiting") {
+
+        clearTimeout(reactionTimer);
+
+        reactionState = "idle";
+
+        document.getElementById("reactionBox").className =
+            "reaction-box";
+
+        document.getElementById("reactionText").textContent =
+            "Too early! Press START.";
+
+        return;
+    }
+
+    if (reactionState === "ready") {
+
+        const time =
+            Math.round(performance.now() - reactionStart);
+
+        reactionState = "idle";
+
+        document.getElementById("reactionBox").className =
+            "reaction-box";
+
+        document.getElementById("reactionText").textContent =
+            time + " ms";
+
+        let best =
+            Number(localStorage.getItem("reactionBest") || 99999);
+
+        if (time < best) {
+
+            best = time;
+
+            localStorage.setItem(
+                "reactionBest",
+                String(best)
+            );
+
+            document.getElementById("reactionResult").textContent =
+                "NEW BEST: " + best + " ms";
+
+        } else {
+
+            document.getElementById("reactionResult").textContent =
+                "Best: " + best + " ms";
+        }
+    }
+}
+
+</script>
+
+</body>
+</html>
+```
